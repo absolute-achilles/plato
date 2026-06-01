@@ -1,0 +1,5 @@
+package domain
+
+type Student struct {
+	User
+}
