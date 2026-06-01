@@ -1,8 +1,7 @@
 # Modules
-
 - Actionable components of the system that is modular in nature
 
-## Role-Based Access Control (Authentication)
+## Role-Based Access Control
 
 ## User
 
@@ -25,3 +24,24 @@
 ## Evaluation
 
 ## Attendance
+
+# Detail Implementation
+
+## Auth
+- OAuth
+- JWT
+- RBAC
+
+## Database
+- PostgreSQL: stores tables data regarding users
+
+## Storage
+- Object storage (S3, R3): stores pdf, ppt, images, videos, etc
+
+## Backend
+- Golang
+
+## Frontend
+- NextJS
+- TailwindCSS
+- Shadcn
