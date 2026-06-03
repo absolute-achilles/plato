@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS admin;
+
+DROP TABLE IF EXIST student;
+
+DROP TABLE IF EXISTS guardian;
+
+DROP TABLE IF EXISTS teacher;
+
+DROP TABLE IF EXISTS "user";
+
+DROP IF EXISTS TYPE user_role;
