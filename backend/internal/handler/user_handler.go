@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"strconv"
-
+	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/dto"
 	"github.com/absolute-achilles/plato/internal/service"
 	"github.com/absolute-achilles/plato/pkg/response"
@@ -40,13 +39,15 @@ func (h *UserHandler) createUser(c *gin.Context) {
 }
 
 func (h *UserHandler) getUser(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		response.BadRequest(c, "INVALID_ID", "id must be a number")
+	id := c.Param("id")
+	if id == "" {
+		response.BadRequest(c, "INVALID_ID", "id must not be empty")
 		return
 	}
 
-	user, err := h.svc.GetUser(c.Request.Context(), id)
+	role := c.Query("role")
+
+	user, err := h.svc.GetUser(c.Request.Context(), id, domain.Role(role))
 	if err != nil {
 		response.NotFound(c, "user not found")
 		return

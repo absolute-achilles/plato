@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS guardian;
 
 DROP TABLE IF EXISTS teacher;
 
+DROP INDEX IF EXISTS idx_user_role ON "user"(role);
+
 DROP TABLE IF EXISTS "user";
 
 DROP IF EXISTS TYPE user_role;
