@@ -56,6 +56,15 @@ func BadRequest(c *gin.Context, code, message string) {
 	})
 }
 
+// TooManyRequests sends a 429 response with the given code and message.
+func TooManyRequests(c *gin.Context, code, message string) {
+	c.Abort()
+	c.JSON(http.StatusTooManyRequests, Envelope{
+		Success: false,
+		Error:   &APIError{Code: code, Message: message},
+	})
+}
+
 // Unauthorized sends a 401 response.
 func Unauthorized(c *gin.Context, message string) {
 	c.JSON(http.StatusUnauthorized, Envelope{

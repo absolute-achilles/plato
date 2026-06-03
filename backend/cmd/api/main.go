@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/absolute-achilles/plato/internal/handler"
 	"github.com/absolute-achilles/plato/internal/middleware"
 	"github.com/absolute-achilles/plato/pkg/logger"
 	"github.com/gin-contrib/cors"
@@ -59,7 +60,9 @@ func main() {
 	// 5. create gin
 	r := gin.New()
 	r.Use(gin.Recovery())
+	r.SetTrustedProxies(nil)
 	r.Use(middleware.TimeoutMiddleware(Timeout))
+	r.Use(middleware.RateLimiterMiddleware())
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -68,13 +71,14 @@ func main() {
 	}))
 
 	// 7. assign gin handlers
-	_ = r.Group("/api/v1")
-	// api := r.Group("/api/v1")
+	api := r.Group("/api/v1")
+	handler.RegisterHealthCheck(api)
+
+	// userHandler.RegisterRoutes(api)
 
 	slog.Info("server starting", "port", "8080")
 	if err := r.Run(":8080"); err != nil {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
 	}
-	// userHandler.RegisterRoutes(api)
 }
