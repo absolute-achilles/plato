@@ -7,7 +7,7 @@ DB_USER := user
 DB_PASSWORD := pass
 DB_HOST := localhost
 DB_PORT := 5432
-DB_NAME := dbname
+DB_NAME := plato
 DB_URL := "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable"
 MIGRATION_PATH := db/migrations
 
