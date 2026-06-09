@@ -9,9 +9,15 @@ import (
 )
 
 type Config struct {
-	DSN             string
-	MaxOpenConns    int
-	MaxIdleConns    int
+	DSN          string
+	MaxOpenConns int
+	MaxIdleConns int
+
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	//
+	// Expired connections may be closed lazily before reuse.
+	//
+	// If d <= 0, connections are not closed due to a connection's age.
 	ConnMaxLifetime time.Duration
 }
 

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     name VARCHAR(50) NOT NULL,
     email TEXT NOT NULL UNIQUE, 
     password VARCHAR(255) NOT NULL,
-    role user_role NOT NULL
+    role user_role NOT NULL,
 
     UNIQUE (id, role)
 );
