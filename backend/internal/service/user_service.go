@@ -15,7 +15,7 @@ type UserService interface {
 	GetUsers(ctx context.Context, role domain.Role) ([]domain.User, error)
 	GetStudent(ctx context.Context, id string) (*domain.Student, error)
 	GetTeacher(ctx context.Context, id string) (*domain.Teacher, error)
-	GetGuardian(ctx context.Context, id string) (*domain.Guardian, error)
+	GetParent(ctx context.Context, id string) (*domain.Parent, error)
 	GetAdmin(ctx context.Context, id string) (*domain.Admin, error)
 
 	// Create
@@ -68,8 +68,8 @@ func (s *userService) GetTeacher(ctx context.Context, id string) (*domain.Teache
 	return teacher, nil
 
 }
-func (s *userService) GetGuardian(ctx context.Context, id string) (*domain.Guardian, error) {
-	guardian, err := s.repo.GetGuardianByID(ctx, id)
+func (s *userService) GetParent(ctx context.Context, id string) (*domain.Parent, error) {
+	guardian, err := s.repo.GetParentByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("userService.GetUser: %w", err)
 	}

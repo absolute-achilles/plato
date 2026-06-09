@@ -17,7 +17,7 @@ type UserRepository interface {
 
 	GetStudentByID(ctx context.Context, id string) (*domain.Student, error)
 	GetTeacherByID(ctx context.Context, id string) (*domain.Teacher, error)
-	GetGuardianByID(ctx context.Context, id string) (*domain.Guardian, error)
+	GetParentByID(ctx context.Context, id string) (*domain.Parent, error)
 	GetAdminByID(ctx context.Context, id string) (*domain.Admin, error)
 
 	Create(ctx context.Context, req *dto.CreateUserRequest) (*domain.User, error)
@@ -33,7 +33,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 }
 
 func queryUserByID[T any](ctx context.Context, db *sqlx.DB, id string, role domain.Role) (*T, error) {
-	if role != "" && role != domain.RoleAdmin && role != domain.RoleGuardian && role != domain.RoleStudent && role != domain.RoleTeacher {
+	if role != "" && role != domain.RoleAdmin && role != domain.RoleParent && role != domain.RoleStudent && role != domain.RoleTeacher {
 		return nil, fmt.Errorf("invalid role: %s", role)
 	}
 
@@ -58,7 +58,7 @@ func queryUserByID[T any](ctx context.Context, db *sqlx.DB, id string, role doma
 }
 
 func queryUsers[T any](ctx context.Context, db *sqlx.DB, role domain.Role) ([]T, error) {
-	if role != "" && role != domain.RoleAdmin && role != domain.RoleGuardian && role != domain.RoleStudent && role != domain.RoleTeacher {
+	if role != "" && role != domain.RoleAdmin && role != domain.RoleParent && role != domain.RoleStudent && role != domain.RoleTeacher {
 		return nil, fmt.Errorf("invalid role: %s", role)
 	}
 
@@ -90,7 +90,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id string, role domain
 }
 
 func (r *userRepository) GetAllUsers(ctx context.Context, role domain.Role) ([]domain.User, error) {
-	if role != "" && role != domain.RoleAdmin && role != domain.RoleGuardian && role != domain.RoleStudent && role != domain.RoleTeacher {
+	if role != "" && role != domain.RoleAdmin && role != domain.RoleParent && role != domain.RoleStudent && role != domain.RoleTeacher {
 		return nil, fmt.Errorf("invalid role: %s", role)
 	}
 
@@ -118,8 +118,8 @@ func (r *userRepository) GetTeacherByID(ctx context.Context, id string) (*domain
 	return teacher, nil
 }
 
-func (r *userRepository) GetGuardianByID(ctx context.Context, id string) (*domain.Guardian, error) {
-	guardian, err := queryUserByID[domain.Guardian](ctx, r.db, id, domain.RoleGuardian)
+func (r *userRepository) GetParentByID(ctx context.Context, id string) (*domain.Parent, error) {
+	guardian, err := queryUserByID[domain.Parent](ctx, r.db, id, domain.RoleParent)
 	if err != nil {
 		return nil, fmt.Errorf("userRepository.GetByID: %w", err)
 	}

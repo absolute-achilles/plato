@@ -18,8 +18,10 @@ func NewUserHandler(svc service.UserService) *UserHandler {
 
 func (h *UserHandler) RegisterRoutes(api *gin.RouterGroup) {
 	users := api.Group("/users")
-	users.POST("", h.createUser)
-	users.GET("/:id", h.getUser)
+	{
+		users.POST("", h.createUser)
+		users.GET("/:id", h.getUser)
+	}
 }
 
 func (h *UserHandler) createUser(c *gin.Context) {
