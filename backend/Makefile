@@ -26,6 +26,11 @@ help:
 run:
 	go run cmd/api/main.go
 
+## test: run all test golang program verbose (no cache)
+.PHONY: test
+test:
+	go test ./... -v --count=1
+
 # ==============================================================================
 # Migration Commands
 # ==============================================================================
