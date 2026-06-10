@@ -50,8 +50,8 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
 
-	teacherQuery := `INSERT INTO student (user_id) VALUES ($1)`
-	_, err = tx.ExecContext(ctx, teacherQuery, student.ID)
+	studentQuery := `INSERT INTO student (user_id) VALUES ($1)`
+	_, err = tx.ExecContext(ctx, studentQuery, student.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert student: %w", err)
 	}
