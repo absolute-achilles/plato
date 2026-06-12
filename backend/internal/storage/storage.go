@@ -8,7 +8,7 @@ import (
 )
 
 type Storage interface {
-	Upload(ctx context.Context, filename string, content io.Reader, contentType domain.ContentType) (string, error)
+	Upload(ctx context.Context, filename string, content io.Reader, contentType domain.FileType) (string, error)
 	Delete(ctx context.Context, filename string)
 	GetUrl(filename string) string
 }

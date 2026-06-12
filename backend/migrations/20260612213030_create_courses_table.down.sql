@@ -2,6 +2,12 @@ DROP TABLE IF EXISTS enrollments;
 
 DROP INDEX IF EXISTS idx_module_course_position ON modules(course_id, position);
 
+DROP TABLE IF EXISTS content_attachments;
+
+DROP INDEX IF EXISTS idx_content_module_position ON module_contents(module_id, position);
+
+DROP TABLE IF EXISTS module_contents;
+
 DROP TABLE IF EXISTS modules;
 
 DROP TABLE IF EXISTS courses;
