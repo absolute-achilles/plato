@@ -1,0 +1,49 @@
+set default-list := true
+set dotenv-load := true
+
+DB_USER := "user"
+DB_PASSWORD := "pass"
+DB_HOST := "localhost"
+DB_PORT := "5432"
+DB_NAME := "plato"
+DB_URL := f"postgres://{{DB_USER}}:{{DB_PASSWORD}}@{{DB_HOST}}:{{DB_PORT}}/{{DB_NAME}}?sslmode=disable"
+MIGRATION_PATH := "db/migrations"
+
+# run golang program
+[group('program')]
+run:
+  go run cmd/api/main.go
+
+# run all test golang program verbose (no cache)
+[group('program')]
+test:
+  @go test ./... -v --count=1 || echo "{{RED}}test fails"
+
+# apply all up migrations
+[group('migration')]
+migrate-up:
+	migrate -path {{MIGRATION_PATH}} -database {{DB_URL}} up
+
+# apply just the next up migration
+[group('migration')]
+migrate-up-1:
+	migrate -path {{MIGRATION_PATH}} -database {{DB_URL}} up 1
+
+# apply all down migrations (careful: drops everything)
+[group('migration')]
+migrate-down:
+	migrate -path {{MIGRATION_PATH}} -database {{DB_URL}} down
+
+# apply just the previous down migration (rollback one step)
+[group('migration')]
+migrate-down-1:
+	migrate -path {{MIGRATION_PATH}} -database {{DB_URL}} down 1
+
+# name=$1: create a new migration pair with timestamp
+[group('migration')]
+migrate-create name:
+	@if [ -z "$(name)" ]; then \
+		echo "Error: Migration name is required. Use: make migrate-create name=your_migration_name"; \
+		exit 1; \
+	fi
+	migrate create -ext sql -dir {{MIGRATION_PATH}} -seq {{name}}
