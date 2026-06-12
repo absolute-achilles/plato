@@ -42,11 +42,18 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
-		VALUES ($1, $2, $3, 'STUDENT')
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(ctx, insertUserQuery, student.Username, student.Email, hashedPassword).Scan(&student.ID)
+	err = tx.QueryRowContext(
+		ctx,
+		insertUserQuery,
+		student.Username,
+		student.Email,
+		hashedPassword,
+		domain.RoleStudent,
+	).Scan(&student.ID)
 	if err != nil {
 		switch {
 		// Duplicate

@@ -41,11 +41,18 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
-		VALUES ($1, $2, $3, 'TEACHER')
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(ctx, insertUserQuery, teacher.Username, teacher.Email, hashedPassword).Scan(&teacher.ID)
+	err = tx.QueryRowContext(
+		ctx,
+		insertUserQuery,
+		teacher.Username,
+		teacher.Email,
+		hashedPassword,
+		domain.RoleTeacher,
+	).Scan(&teacher.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
