@@ -4,7 +4,6 @@ import "time"
 
 type Role string
 
-// also the table name in the DB
 const (
 	RoleStudent Role = "student"
 	RoleTeacher Role = "teacher"
@@ -24,6 +23,14 @@ type User struct {
 	Role         Role      `db:"role"       json:"role"`
 	CreatedAt    time.Time `db:"created_at" json:"created_at"`
 }
+
+type ParentRelationship string
+
+const (
+	ParentRelationshipFather   ParentRelationship = "father"
+	ParentRelationshipMother   ParentRelationship = "mother"
+	ParentRelationshipGuardian ParentRelationship = "guardian"
+)
 
 type Parent struct {
 	User

@@ -1,5 +1,17 @@
--- 1. Create the ENUM for the user roles
-CREATE TYPE user_role AS ENUM ('admin', 'student', 'parent', 'teacher');
+-- ENUMS
+CREATE TYPE user_role AS ENUM (
+  'admin',
+  'student',
+  'parent',
+  'teacher'
+);
+
+CREATE TYPE parent_type AS ENUM (
+  'father',
+  'mother',
+  'guardian',
+  'other'
+);
 
 -- 2. Create the base User table
 CREATE TABLE IF NOT EXISTS users (
@@ -8,6 +20,11 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL UNIQUE,
     hash_password VARCHAR(255) NOT NULL,
     role user_role NOT NULL,
+
+    -- Additional informations
+    phone_number VARCHAR(20),
+
+    created_at TIMESTAMPTZ DEFAULT now(),
 
     UNIQUE (id, role)
 );
@@ -38,6 +55,7 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS parents (
     user_id UUID PRIMARY KEY,
     role user_role DEFAULT 'parent' CHECK (role = 'parent'),
+    type parent_type,
     CONSTRAINT fk_parent_user
         FOREIGN KEY (user_id, role)
         REFERENCES users(id, role)
@@ -52,4 +70,24 @@ CREATE TABLE IF NOT EXISTS teachers (
         FOREIGN KEY (user_id, role)
         REFERENCES users(id, role)
         ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS parent_student_links(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent_id UUID NOT NULL,
+    student_id UUID NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now(),
+
+    CONSTRAINT fk_parent
+        FOREIGN KEY (parent_id)
+        REFERENCES parents(user_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_student
+        FOREIGN KEY (student_id)
+        REFERENCES students(user_id)
+        ON DELETE CASCADE,
+
+    UNIQUE(parent_id, student_id)
 );
