@@ -9,6 +9,11 @@ DB_NAME := "plato"
 DB_URL := f"postgres://{{DB_USER}}:{{DB_PASSWORD}}@{{DB_HOST}}:{{DB_PORT}}/{{DB_NAME}}?sslmode=disable"
 MIGRATION_PATH := "db/migrations"
 
+_check-docker:
+  @echo "{{MAGENTA}}Checking if Docker is running..."
+  @docker info > /dev/null 2>&1 || (echo "{{RED}}❌ Error: Docker daemon is not running!" && exit 1)
+  @echo "{{GREEN}}Docker is running{{NORMAL}}"
+
 # run golang program
 [group('program')]
 run:
@@ -16,7 +21,7 @@ run:
 
 # run all test golang program verbose
 [group('program')]
-test arguments="":
+test arguments="": _check-docker
   @go test ./... {{arguments}} --count=1 && \
     echo "{{GREEN}}Test Success" || \
     (echo "{{RED}}Test Fails" && exit 1)
