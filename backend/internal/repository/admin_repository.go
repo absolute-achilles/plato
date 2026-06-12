@@ -10,7 +10,7 @@ import (
 )
 
 type AdminRepository interface {
-	// student struct will be filled with the resulted ID
+	// admin struct will be filled with the resulted ID
 	Create(ctx context.Context, admin *domain.Admin) error
 }
 
@@ -28,7 +28,7 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 		return fmt.Errorf("Empty Admin Request")
 	}
 
-	hashedPassword, err := utils.HashPassword(admin.Password)
+	hashedPassword, err := utils.HashPassword(admin.HashPassword)
 	if err != nil {
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
@@ -40,7 +40,7 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, password, role)
+		INSERT INTO "user" (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'ADMIN')
 		RETURNING id
 	`

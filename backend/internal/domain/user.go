@@ -14,12 +14,15 @@ const (
 
 // User is the core entity — db tags for sqlx, json tags for direct marshaling
 type User struct {
-	ID        string    `db:"id"         json:"id"`
-	Name      string    `db:"name"       json:"name"`
-	Email     string    `db:"email"      json:"email"`
-	Password  string    `db:"password"   json:"-"`
-	Role      Role      `db:"role"       json:"role"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	// ID is unique
+	ID string `db:"id"         json:"id"`
+	// Name is unique
+	Name string `db:"name"       json:"name"`
+	// Email is unique
+	Email        string    `db:"email"      json:"email"`
+	HashPassword string    `db:"hash_password"   json:"-"`
+	Role         Role      `db:"role"       json:"role"`
+	CreatedAt    time.Time `db:"created_at" json:"created_at"`
 }
 
 type Parent struct {

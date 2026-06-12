@@ -10,7 +10,7 @@ import (
 )
 
 type ParentRepository interface {
-	// student struct will be filled with the resulted ID
+	// parent struct will be filled with the resulted ID
 	Create(ctx context.Context, parent *domain.Parent) error
 }
 
@@ -28,7 +28,7 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 		return fmt.Errorf("Empty Parent Request")
 	}
 
-	hashedPassword, err := utils.HashPassword(parent.Password)
+	hashedPassword, err := utils.HashPassword(parent.HashPassword)
 	if err != nil {
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
@@ -40,7 +40,7 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, password, role)
+		INSERT INTO "user" (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'PARENT')
 		RETURNING id
 	`

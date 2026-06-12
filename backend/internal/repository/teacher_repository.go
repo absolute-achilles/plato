@@ -28,7 +28,7 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 		return fmt.Errorf("Empty Teacher Request")
 	}
 
-	hashedPassword, err := utils.HashPassword(teacher.Password)
+	hashedPassword, err := utils.HashPassword(teacher.HashPassword)
 	if err != nil {
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
@@ -40,7 +40,7 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, password, role)
+		INSERT INTO "user" (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'TEACHER')
 		RETURNING id
 	`
