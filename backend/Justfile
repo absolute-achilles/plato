@@ -14,10 +14,10 @@ MIGRATION_PATH := "db/migrations"
 run:
   go run cmd/api/main.go
 
-# run all test golang program verbose (no cache)
+# run all test golang program verbose
 [group('program')]
-test:
-  @go test ./... -v --count=1 && \
+test arguments="":
+  @go test ./... {{arguments}} --count=1 && \
     echo "{{GREEN}}Test Success" || \
     (echo "{{RED}}Test Fails" && exit 1)
 
