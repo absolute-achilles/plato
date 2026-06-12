@@ -30,7 +30,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
 	var user domain.User
-	query := `SELECT id, name, email, hash_password, role FROM "user" WHERE id = $1`
+	query := `SELECT id, name, email, hash_password, role FROM users WHERE id = $1`
 	if err := r.db.GetContext(ctx, &user, query, id); err != nil {
 		return nil, fmt.Errorf("userRepository.GetByEmail: %w", err)
 	}
@@ -39,7 +39,7 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*domain.User, 
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
 	var user domain.User
-	query := `SELECT id, name, email, hash_password, role FROM "user" WHERE email = $1`
+	query := `SELECT id, name, email, hash_password, role FROM users WHERE email = $1`
 	if err := r.db.GetContext(ctx, &user, query, email); err != nil {
 		return nil, fmt.Errorf("userRepository.GetByEmail: %w", err)
 	}
@@ -57,7 +57,7 @@ func (r *userRepository) ChangePassword(ctx context.Context, id, oldPassword, ne
 	}
 
 	queryUpdatePassword := `
-	UPDATE "user"
+	UPDATE users
 	SET hash_password = $1
 	WHERE id = $2
 	`
@@ -81,7 +81,7 @@ func (r *userRepository) ChangePassword(ctx context.Context, id, oldPassword, ne
 
 func (r *userRepository) ChangeName(ctx context.Context, id string, newName string) error {
 	query := `
-	UPDATE "user"
+	UPDATE users
 	SET name = $1
 	WHERE id = $2
 	`
@@ -103,7 +103,7 @@ func (r *userRepository) ChangeName(ctx context.Context, id string, newName stri
 }
 
 func (r *userRepository) Delete(ctx context.Context, id string) error {
-	query := `DELETE FROM "user" WHERE id = $1`
+	query := `DELETE FROM users WHERE id = $1`
 
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {

@@ -40,7 +40,7 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, hash_password, role)
+		INSERT INTO users (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'PARENT')
 		RETURNING id
 	`
@@ -50,7 +50,7 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
 
-	parentQuery := `INSERT INTO parent (user_id) VALUES ($1)`
+	parentQuery := `INSERT INTO parents (user_id) VALUES ($1)`
 	_, err = tx.ExecContext(ctx, parentQuery, parent.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert parent: %w", err)

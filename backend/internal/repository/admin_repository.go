@@ -40,7 +40,7 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, hash_password, role)
+		INSERT INTO users (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'ADMIN')
 		RETURNING id
 	`
@@ -50,7 +50,7 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
 
-	adminQuery := `INSERT INTO admin (user_id) VALUES ($1)`
+	adminQuery := `INSERT INTO admins (user_id) VALUES ($1)`
 	_, err = tx.ExecContext(ctx, adminQuery, admin.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert admin: %w", err)

@@ -7,11 +7,24 @@ import (
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/pkg/database"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 )
 
 func TestUserRepositoryE2E(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	postgresC, err := createPostgresContainer(ctx)
+	require.NoError(t, err, "failed to setup postgres test container")
+
+	defer testcontainers.CleanupContainer(t, postgresC)
+
+	connStr, err := postgresC.ConnectionString(ctx, "sslmode=disable")
+	require.NoError(t, err, "could not get DB connection string")
+
 	db, err := database.NewPostgres(database.Config{
-		DSN:             TestDBConnString,
+		DSN:             connStr,
 		MaxOpenConns:    200,
 		MaxIdleConns:    5000,
 		ConnMaxLifetime: 600,
@@ -22,8 +35,6 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 	// Test using student repository
 	studentRepo := NewStudentRepository(db)
-
-	ctx := context.Background()
 
 	t.Run("Create User and Get User", func(t *testing.T) {
 		t.Parallel()

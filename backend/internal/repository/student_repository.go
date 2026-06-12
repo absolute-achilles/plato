@@ -41,7 +41,7 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO "user" (name, email, hash_password, role)
+		INSERT INTO users (name, email, hash_password, role)
 		VALUES ($1, $2, $3, 'STUDENT')
 		RETURNING id
 	`
@@ -64,7 +64,7 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		}
 	}
 
-	studentQuery := `INSERT INTO student (user_id) VALUES ($1)`
+	studentQuery := `INSERT INTO students (user_id) VALUES ($1)`
 	_, err = tx.ExecContext(ctx, studentQuery, student.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert student: %w", err)
