@@ -1,4 +1,9 @@
-CREATE TYPE attendance_status AS ENUM ('present', 'absent', 'late', 'excused');
+CREATE TYPE attendance_status AS ENUM (
+  'present',
+  'absent',
+  'late',
+  'excused'
+);
 
 CREATE TABLE IF NOT EXISTS attendances (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

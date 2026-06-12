@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type AttendanceStatus string
 
 const (
@@ -8,3 +10,12 @@ const (
 	AttendanceStatusLate    AttendanceStatus = "late"
 	AttendanceStatusExcused AttendanceStatus = "excused"
 )
+
+type Attendance struct {
+	ID         string           `db:"id"`
+	StudentID  string           `db:"student_id"`
+	ModuleID   string           `db:"module_id"`
+	Status     AttendanceStatus `db:"status"`
+	RecordedAt time.Time        `db:"recorded_at"`
+	Notes      string           `db:"notes"`
+}
