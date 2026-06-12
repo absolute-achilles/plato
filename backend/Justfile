@@ -17,7 +17,9 @@ run:
 # run all test golang program verbose (no cache)
 [group('program')]
 test:
-  @go test ./... -v --count=1 || echo "{{RED}}test fails"
+  @go test ./... -v --count=1 && \
+    echo "{{GREEN}}Test Success" || \
+    (echo "{{RED}}Test Fails" && exit 1)
 
 # apply all up migrations
 [group('migration')]
