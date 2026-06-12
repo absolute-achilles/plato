@@ -38,7 +38,7 @@ func TestParentRepositoryE2E(t *testing.T) {
 		t.Parallel()
 		parent := &domain.Parent{
 			User: domain.User{
-				Name:         "John Doe Teacher",
+				Username:     "John Doe Teacher",
 				Email:        "student@gmail.com",
 				HashPassword: "Skibidi12345",
 			},
@@ -51,10 +51,13 @@ func TestParentRepositoryE2E(t *testing.T) {
 		user, err := userRepo.GetByEmail(ctx, parent.Email)
 		require.NoError(t, err)
 		require.Equal(t, user.Email, parent.Email)
+		require.Equal(t, user.Username, parent.Username)
 
 		// Check if student does exist in db by ID
-		_, err = userRepo.GetByID(ctx, parent.ID)
+		user, err = userRepo.GetByID(ctx, parent.ID)
 		require.NoError(t, err)
+		require.Equal(t, user.Email, parent.Email)
+		require.Equal(t, user.Username, parent.Username)
 	})
 
 }

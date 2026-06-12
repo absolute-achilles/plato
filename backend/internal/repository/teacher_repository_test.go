@@ -38,7 +38,7 @@ func TestTeacherRepositoryE2E(t *testing.T) {
 		t.Parallel()
 		teacher := &domain.Teacher{
 			User: domain.User{
-				Name:         "John Doe Teacher",
+				Username:     "John Doe Teacher",
 				Email:        "student@gmail.com",
 				HashPassword: "Skibidi12345",
 			},
@@ -51,10 +51,13 @@ func TestTeacherRepositoryE2E(t *testing.T) {
 		user, err := userRepo.GetByEmail(ctx, teacher.Email)
 		require.NoError(t, err)
 		require.Equal(t, user.Email, teacher.Email)
+		require.Equal(t, user.Username, teacher.Username)
 
 		// Check if student does exist in db by ID
-		_, err = userRepo.GetByID(ctx, teacher.ID)
+		user, err = userRepo.GetByID(ctx, teacher.ID)
 		require.NoError(t, err)
+		require.Equal(t, user.Email, teacher.Email)
+		require.Equal(t, user.Username, teacher.Username)
 	})
 
 }

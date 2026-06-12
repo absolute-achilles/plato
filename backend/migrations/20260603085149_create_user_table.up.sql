@@ -4,7 +4,7 @@ CREATE TYPE user_role AS ENUM ('ADMIN', 'STUDENT', 'PARENT', 'TEACHER');
 -- 2. Create the base User table
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     hash_password VARCHAR(255) NOT NULL,
     role user_role NOT NULL,

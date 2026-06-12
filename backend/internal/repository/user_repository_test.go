@@ -40,7 +40,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 		t.Parallel()
 		student := &domain.Student{
 			User: domain.User{
-				Name:         "Jesse Pinkman",
+				Username:     "Jesse Pinkman",
 				Email:        "jessepink@gmail.com",
 				HashPassword: "Skibidi12345",
 			},
@@ -53,16 +53,19 @@ func TestUserRepositoryE2E(t *testing.T) {
 		user, err := userRepo.GetByEmail(ctx, student.Email)
 		require.NoError(t, err)
 		require.Equal(t, user.Email, student.Email)
+		require.Equal(t, user.Username, student.Username)
 
 		// Check if student does exist in db by ID
-		_, err = userRepo.GetByID(ctx, student.ID)
+		user, err = userRepo.GetByID(ctx, student.ID)
 		require.NoError(t, err)
+		require.Equal(t, user.Username, student.Username)
+		require.Equal(t, user.Username, student.Username)
 	})
 
 	t.Run("Check duplicate email user", func(t *testing.T) {
 		student1 := &domain.Student{
 			User: domain.User{
-				Name:         "Walter White",
+				Username:     "Walter White",
 				Email:        "walterwhite@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -70,7 +73,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student2 := &domain.Student{
 			User: domain.User{
-				Name:         "Walter Green",
+				Username:     "Walter Green",
 				Email:        "walterwhite@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -88,7 +91,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 		t.Parallel()
 		student1 := &domain.Student{
 			User: domain.User{
-				Name:         "Johnny Blaze",
+				Username:     "Johnny Blaze",
 				Email:        "johnnyblaze456@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -96,7 +99,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student2 := &domain.Student{
 			User: domain.User{
-				Name:         "Johnny Blaze",
+				Username:     "Johnny Blaze",
 				Email:        "johnnyblaze123@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -115,7 +118,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student := &domain.Student{
 			User: domain.User{
-				Name:         "Spiderman",
+				Username:     "Spiderman",
 				Email:        "spiderman@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -134,7 +137,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student1 := &domain.Student{
 			User: domain.User{
-				Name:         "Iron Man",
+				Username:     "Iron Man",
 				Email:        "ironman@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -142,7 +145,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student2 := &domain.Student{
 			User: domain.User{
-				Name:         "Hulk",
+				Username:     "Hulk",
 				Email:        "hulk@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},
@@ -164,7 +167,7 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 		student := &domain.Student{
 			User: domain.User{
-				Name:         "Captain America",
+				Username:     "Captain America",
 				Email:        "captainamerica@gmail.com",
 				HashPassword: "SkibidiToilet",
 			},

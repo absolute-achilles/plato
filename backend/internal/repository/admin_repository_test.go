@@ -10,7 +10,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 )
 
-func TestStudentRepositoryE2E(t *testing.T) {
+func TestAdminRepositoryE2E(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
@@ -32,32 +32,32 @@ func TestStudentRepositoryE2E(t *testing.T) {
 
 	userRepo := NewUserRepository(db)
 
-	studentRepo := NewStudentRepository(db)
+	adminRepo := NewAdminRepository(db)
 
-	t.Run("Create Student and Get Student", func(t *testing.T) {
+	t.Run("Create Admin and Get Admin", func(t *testing.T) {
 		t.Parallel()
-		student := &domain.Student{
+		admin := &domain.Admin{
 			User: domain.User{
-				Username:     "John Doe Student",
+				Username:     "John Doe Teacher",
 				Email:        "student@gmail.com",
 				HashPassword: "Skibidi12345",
 			},
 		}
 
-		err := studentRepo.Create(ctx, student)
+		err := adminRepo.Create(ctx, admin)
 		require.NoError(t, err)
 
 		// Check if student does exist in db by email
-		user, err := userRepo.GetByEmail(ctx, student.Email)
+		user, err := userRepo.GetByEmail(ctx, admin.Email)
 		require.NoError(t, err)
-		require.Equal(t, user.Email, student.Email)
-		require.Equal(t, user.Username, student.Username)
+		require.Equal(t, user.Email, admin.Email)
+		require.Equal(t, user.Username, admin.Username)
 
 		// Check if student does exist in db by ID
-		user, err = userRepo.GetByID(ctx, student.ID)
+		user, err = userRepo.GetByID(ctx, admin.ID)
 		require.NoError(t, err)
-		require.Equal(t, user.Email, student.Email)
-		require.Equal(t, user.Username, student.Username)
+		require.Equal(t, user.Email, admin.Email)
+		require.Equal(t, user.Username, admin.Username)
 	})
 
 }

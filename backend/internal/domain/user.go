@@ -16,8 +16,8 @@ const (
 type User struct {
 	// ID is unique
 	ID string `db:"id"         json:"id"`
-	// Name is unique
-	Name string `db:"name"       json:"name"`
+	// Username is unique
+	Username string `db:"username"       json:"username"`
 	// Email is unique
 	Email        string    `db:"email"      json:"email"`
 	HashPassword string    `db:"hash_password"   json:"-"`

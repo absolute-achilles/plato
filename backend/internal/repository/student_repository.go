@@ -41,12 +41,12 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO users (name, email, hash_password, role)
+		INSERT INTO users (username, email, hash_password, role)
 		VALUES ($1, $2, $3, 'STUDENT')
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(ctx, insertUserQuery, student.Name, student.Email, hashedPassword).Scan(&student.ID)
+	err = tx.QueryRowContext(ctx, insertUserQuery, student.Username, student.Email, hashedPassword).Scan(&student.ID)
 	if err != nil {
 		switch {
 		// Duplicate

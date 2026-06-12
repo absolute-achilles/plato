@@ -40,12 +40,12 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 	defer tx.Rollback()
 
 	insertUserQuery := `
-		INSERT INTO users (name, email, hash_password, role)
+		INSERT INTO users (username, email, hash_password, role)
 		VALUES ($1, $2, $3, 'ADMIN')
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(ctx, insertUserQuery, admin.Name, admin.Email, hashedPassword).Scan(&admin.ID)
+	err = tx.QueryRowContext(ctx, insertUserQuery, admin.Username, admin.Email, hashedPassword).Scan(&admin.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
