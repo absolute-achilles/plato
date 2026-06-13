@@ -2,16 +2,16 @@ package domain
 
 import "time"
 
-type FileType string
-
-const (
-	FileTypeImagePng  FileType = "image/png"
-	FileTypeImageJpg  FileType = "image/jpg"
-	FileTypeImageGif  FileType = "image/gif"
-	FileTypeImageWebp FileType = "image/webp"
-
-	FileTypeVideoMp4 FileType = "video/mp4"
-)
+// type FileType string
+//
+// const (
+// 	FileTypeImagePng  FileType = "image/png"
+// 	FileTypeImageJpg  FileType = "image/jpg"
+// 	FileTypeImageGif  FileType = "image/gif"
+// 	FileTypeImageWebp FileType = "image/webp"
+//
+// 	FileTypeVideoMp4 FileType = "video/mp4"
+// )
 
 type ModuleContentType string
 
@@ -53,12 +53,12 @@ type ModuleContent struct {
 }
 
 type ContentAttachment struct {
-	ID              string   `db:"id"`
-	ModuleContentID string   `db:"module_content_id"`
-	Name            string   `db:"name"`
-	URL             string   `db:"url"`
-	SizeBytes       int64    `db:"size_bytes"`
-	FileType        FileType `db:"type"`
+	ID              string `db:"id"`
+	ModuleContentID string `db:"module_content_id"`
+	Name            string `db:"name"`
+	URL             string `db:"url"`
+	SizeBytes       int64  `db:"size_bytes"`
+	FileType        string `db:"type"`
 
 	CreatedAt time.Time `db:"created_at"`
 }

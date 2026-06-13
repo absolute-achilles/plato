@@ -93,7 +93,7 @@ func TestContentAttachmentRepository(t *testing.T) {
 			Name:            "Seven Kingdoms Map",
 			URL:             "https://somewhere.com/map.png",
 			SizeBytes:       1000,
-			FileType:        domain.FileTypeImagePng,
+			FileType:        "image/png",
 		}
 
 		contentAttachmentID, err := contentAttachmentRepo.Create(ctx, expected)
@@ -131,14 +131,14 @@ func TestContentAttachmentRepository(t *testing.T) {
 				Name:            "White Walker Anatomy",
 				URL:             "https://somewhere.com/whitewalker.png",
 				SizeBytes:       2048,
-				FileType:        domain.FileTypeImagePng,
+				FileType:        "image/png",
 			},
 			{
 				ModuleContentID: testModuleContentID,
 				Name:            "Battle of Hardhome",
 				URL:             "https://somewhere.com/hardhome.mp4",
 				SizeBytes:       102400,
-				FileType:        domain.FileTypeVideoMp4,
+				FileType:        "video/mp4",
 			},
 		}
 
