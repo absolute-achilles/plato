@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS module_contents(
   is_published BOOLEAN NOT NULL DEFAULT false,
 
   created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ DEFAULT now(),
 
   CONSTRAINT fk_module
     FOREIGN KEY (module_id)
