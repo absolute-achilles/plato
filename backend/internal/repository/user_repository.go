@@ -113,7 +113,7 @@ func (r *userRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	if result.RowsAffected() == 0 {
-		return fmt.Errorf("user not found with ID: %s", id)
+		return fmt.Errorf("userRepository.Delete: user not found with ID: %s", id)
 	}
 
 	return nil

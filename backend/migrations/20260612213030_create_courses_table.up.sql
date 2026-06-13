@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS modules(
   unlock_date TIMESTAMPTZ, -- If NULL, it unlocks immediately upon publishing
 
   created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
 
   CONSTRAINT fk_course
     FOREIGN KEY (course_id)

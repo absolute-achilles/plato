@@ -13,8 +13,8 @@ type CourseRepository interface {
 	Get(ctx context.Context, courseID string) (*domain.Course, error)
 	GetTeacherCoursesByID(ctx context.Context, teacherID string) ([]*domain.Course, error)
 	GetTeacherCoursesByEmail(ctx context.Context, teacherEmail string) ([]*domain.Course, error)
-	// course struct will be filled with the resulted ID
-	Create(ctx context.Context, course *domain.Course) error
+	Create(ctx context.Context, course *domain.Course) (id string, err error)
+	Delete(ctx context.Context, courseID string) error
 }
 
 type courseRepository struct {
@@ -42,13 +42,13 @@ func (r *courseRepository) Get(ctx context.Context, courseID string) (*domain.Co
 	return course, nil
 }
 
-func (r *courseRepository) Create(ctx context.Context, course *domain.Course) error {
+func (r *courseRepository) Create(ctx context.Context, course *domain.Course) (id string, err error) {
 	if course == nil {
-		return fmt.Errorf("courseRepository.Create: Empty Course Request")
+		return "", fmt.Errorf("courseRepository.Create: Empty Course Request")
 	}
 
 	if course.TeacherID == "" {
-		return fmt.Errorf("courseRepository.Create: Empty Teacher ID")
+		return "", fmt.Errorf("courseRepository.Create: Empty Teacher ID")
 	}
 
 	insertQuery := `
@@ -57,8 +57,22 @@ func (r *courseRepository) Create(ctx context.Context, course *domain.Course) er
 		RETURNING id
 	`
 
-	if err := r.db.QueryRow(ctx, insertQuery, course.TeacherID, course.Name, course.Description).Scan(&course.ID); err != nil {
-		return fmt.Errorf("courseRepository.Create: %w", err)
+	if err := r.db.QueryRow(ctx, insertQuery, course.TeacherID, course.Name, course.Description).Scan(&id); err != nil {
+		return "", fmt.Errorf("courseRepository.Create: %w", err)
+	}
+
+	return id, nil
+}
+
+func (r *courseRepository) Delete(ctx context.Context, courseID string) error {
+	query := `DELETE FROM courses WHERE id = $1`
+	result, err := r.db.Exec(ctx, query, courseID)
+	if err != nil {
+		return fmt.Errorf("courseRepository.Delete: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("courseRepository.Delete: course not found with ID: %s", courseID)
 	}
 
 	return nil

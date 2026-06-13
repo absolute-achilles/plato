@@ -47,17 +47,22 @@ func TestCourseRepository(t *testing.T) {
 		err := teacherRepo.Create(ctx, teacher)
 		require.NoError(t, err)
 
-		course := &domain.Course{
+		expectedCourse := &domain.Course{
 			TeacherID:   teacher.ID,
 			Name:        "Game of Thrones",
 			Description: "About game of thrones",
 		}
 
-		err = courseRepo.Create(ctx, course)
+		courseID, err := courseRepo.Create(ctx, expectedCourse)
 		require.NoError(t, err)
 
+		dataCourse, err := courseRepo.Get(ctx, courseID)
+		require.NoError(t, err, "failed to get course")
+		require.Equal(t, dataCourse.Name, expectedCourse.Name)
+		require.Equal(t, dataCourse.Description, expectedCourse.Description)
+
 		// Duplicate course is allowed here (in the meantime)
-		err = courseRepo.Create(ctx, course)
+		_, err = courseRepo.Create(ctx, expectedCourse)
 		require.NoError(t, err)
 	})
 
@@ -87,8 +92,9 @@ func TestCourseRepository(t *testing.T) {
 			},
 		}
 
-		for _, course := range teacherCourses {
-			err = courseRepo.Create(ctx, course)
+		for i, course := range teacherCourses {
+			courseID, err := courseRepo.Create(ctx, course)
+			teacherCourses[i].ID = courseID
 			require.NoError(t, err)
 		}
 
@@ -125,6 +131,5 @@ func TestCourseRepository(t *testing.T) {
 			}
 			require.True(t, found, "expected course not found in database results")
 		}
-
 	})
 }
