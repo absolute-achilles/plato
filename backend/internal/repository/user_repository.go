@@ -30,7 +30,7 @@ func NewUserRepository(db *pgxpool.Pool) UserRepository {
 }
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
-	query := `SELECT id, username, email, hash_password, role FROM users WHERE id = $1`
+	query := `SELECT id, username, email, hash_password, role, created_at FROM users WHERE id = $1`
 
 	row, err := r.db.Query(ctx, query, id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*domain.User, 
 }
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
-	query := `SELECT id, username, email, hash_password, role FROM users WHERE email = $1`
+	query := `SELECT id, username, email, hash_password, role, created_at FROM users WHERE email = $1`
 	rows, err := r.db.Query(ctx, query, email)
 	if err != nil {
 		return nil, fmt.Errorf("userRepository.GetByEmail: %w", err)
