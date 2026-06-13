@@ -18,5 +18,5 @@ type Attendance struct {
 	ModuleID   string           `db:"module_id"`
 	Status     AttendanceStatus `db:"status"`
 	RecordedAt time.Time        `db:"recorded_at"`
-	Notes      string           `db:"notes"`
+	Notes      *string          `db:"notes"`
 }
