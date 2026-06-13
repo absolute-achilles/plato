@@ -59,4 +59,6 @@ type ContentAttachment struct {
 	URL             string   `db:"url"`
 	SizeBytes       int64    `db:"size_bytes"`
 	FileType        FileType `db:"type"`
+
+	CreatedAt time.Time `db:"created_at"`
 }
