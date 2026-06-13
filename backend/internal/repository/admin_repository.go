@@ -6,7 +6,8 @@ import (
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type AdminRepository interface {
@@ -15,10 +16,10 @@ type AdminRepository interface {
 }
 
 type adminRepository struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
-func NewAdminRepository(db *sqlx.DB) AdminRepository {
+func NewAdminRepository(db *pgxpool.Pool) AdminRepository {
 	return &adminRepository{db: db}
 }
 
@@ -33,11 +34,11 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
@@ -45,7 +46,7 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(
+	err = tx.QueryRow(
 		ctx,
 		insertUserQuery,
 		admin.Username,
@@ -58,10 +59,10 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 	}
 
 	adminQuery := `INSERT INTO admins (user_id) VALUES ($1)`
-	_, err = tx.ExecContext(ctx, adminQuery, admin.ID)
+	_, err = tx.Exec(ctx, adminQuery, admin.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert admin: %w", err)
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }

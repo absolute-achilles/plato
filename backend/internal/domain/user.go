@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type Role string
 
 const (
@@ -11,17 +9,16 @@ const (
 	RoleAdmin   Role = "admin"
 )
 
-// User is the core entity — db tags for sqlx, json tags for direct marshaling
 type User struct {
 	// ID is unique
 	ID string `db:"id"         json:"id"`
 	// Username is unique
 	Username string `db:"username"       json:"username"`
 	// Email is unique
-	Email        string    `db:"email"      json:"email"`
-	HashPassword string    `db:"hash_password"   json:"-"`
-	Role         Role      `db:"role"       json:"role"`
-	CreatedAt    time.Time `db:"created_at" json:"created_at"`
+	Email        string `db:"email"      json:"email"`
+	HashPassword string `db:"hash_password"   json:"-"`
+	Role         Role   `db:"role"       json:"role"`
+	// CreatedAt    time.Time `db:"created_at" json:"created_at"`
 }
 
 type ParentRelationship string

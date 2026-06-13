@@ -7,7 +7,8 @@ import (
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type StudentRepository interface {
@@ -16,10 +17,10 @@ type StudentRepository interface {
 }
 
 type studentRepository struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
-func NewStudentRepository(db *sqlx.DB) StudentRepository {
+func NewStudentRepository(db *pgxpool.Pool) StudentRepository {
 	return &studentRepository{db: db}
 }
 
@@ -34,11 +35,11 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
@@ -46,7 +47,7 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(
+	err = tx.QueryRow(
 		ctx,
 		insertUserQuery,
 		student.Username,
@@ -72,10 +73,10 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 	}
 
 	studentQuery := `INSERT INTO students (user_id) VALUES ($1)`
-	_, err = tx.ExecContext(ctx, studentQuery, student.ID)
+	_, err = tx.Exec(ctx, studentQuery, student.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert student: %w", err)
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }

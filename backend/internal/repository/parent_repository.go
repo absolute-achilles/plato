@@ -6,7 +6,8 @@ import (
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type ParentRepository interface {
@@ -15,10 +16,10 @@ type ParentRepository interface {
 }
 
 type parentRepository struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
-func NewParentRepository(db *sqlx.DB) ParentRepository {
+func NewParentRepository(db *pgxpool.Pool) ParentRepository {
 	return &parentRepository{db: db}
 }
 
@@ -33,11 +34,11 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
@@ -45,7 +46,7 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(
+	err = tx.QueryRow(
 		ctx,
 		insertUserQuery,
 		parent.Username,
@@ -58,10 +59,10 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 	}
 
 	parentQuery := `INSERT INTO parents (user_id) VALUES ($1)`
-	_, err = tx.ExecContext(ctx, parentQuery, parent.ID)
+	_, err = tx.Exec(ctx, parentQuery, parent.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert parent: %w", err)
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }

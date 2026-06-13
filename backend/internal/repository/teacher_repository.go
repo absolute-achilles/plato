@@ -6,7 +6,8 @@ import (
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type TeacherRepository interface {
@@ -15,10 +16,10 @@ type TeacherRepository interface {
 }
 
 type teacherRepository struct {
-	db *sqlx.DB
+	db *pgxpool.Pool
 }
 
-func NewTeacherRepository(db *sqlx.DB) TeacherRepository {
+func NewTeacherRepository(db *pgxpool.Pool) TeacherRepository {
 	return &teacherRepository{db: db}
 }
 
@@ -33,11 +34,11 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
 		INSERT INTO users (username, email, hash_password, role)
@@ -45,23 +46,22 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 		RETURNING id
 	`
 
-	err = tx.QueryRowContext(
+	if err := tx.QueryRow(
 		ctx,
 		insertUserQuery,
 		teacher.Username,
 		teacher.Email,
 		hashedPassword,
 		domain.RoleTeacher,
-	).Scan(&teacher.ID)
-	if err != nil {
+	).Scan(&teacher.ID); err != nil {
 		return fmt.Errorf("Failed to insert user: %w", err)
 	}
 
 	teacherQuery := `INSERT INTO teachers (user_id) VALUES ($1)`
-	_, err = tx.ExecContext(ctx, teacherQuery, teacher.ID)
+	_, err = tx.Exec(ctx, teacherQuery, teacher.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to insert teacher: %w", err)
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }

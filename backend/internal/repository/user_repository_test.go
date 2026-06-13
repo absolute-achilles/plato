@@ -3,8 +3,10 @@ package repository
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/absolute-achilles/plato/internal/domain"
+	"github.com/absolute-achilles/plato/pkg/common"
 	"github.com/absolute-achilles/plato/pkg/database"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -25,9 +27,9 @@ func TestUserRepositoryE2E(t *testing.T) {
 
 	db, err := database.NewPostgres(database.Config{
 		DSN:             connStr,
-		MaxOpenConns:    200,
-		MaxIdleConns:    5000,
-		ConnMaxLifetime: 600,
+		MaxConns:        common.Int32Ptr(200),
+		MinIdleConns:    common.Int32Ptr(5000),
+		ConnMaxLifetime: common.TimeDurationPtr(10 * time.Minute),
 	})
 	require.NoError(t, err)
 
@@ -184,6 +186,30 @@ func TestUserRepositoryE2E(t *testing.T) {
 		// correct old password
 		err = userRepo.ChangePassword(ctx, student.ID, "SkibidiToilet", "Hulk")
 		require.NoError(t, err)
+	})
+
+	t.Run("Delete User", func(t *testing.T) {
+		t.Parallel()
+
+		student := &domain.Student{
+			User: domain.User{
+				Username:     "Dark Souls",
+				Email:        "darksouls@gmail.com",
+				HashPassword: "SkibidiToilet",
+			},
+		}
+
+		ctx := context.Background()
+		err := studentRepo.Create(ctx, student)
+		require.NoError(t, err)
+
+		// delete user
+		err = userRepo.Delete(ctx, student.ID)
+		require.NoError(t, err)
+
+		// delete non-existing user
+		err = userRepo.Delete(ctx, student.ID)
+		require.Error(t, err)
 	})
 
 }

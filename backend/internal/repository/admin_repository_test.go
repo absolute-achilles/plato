@@ -3,8 +3,10 @@ package repository
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/absolute-achilles/plato/internal/domain"
+	"github.com/absolute-achilles/plato/pkg/common"
 	"github.com/absolute-achilles/plato/pkg/database"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -24,9 +26,9 @@ func TestAdminRepositoryE2E(t *testing.T) {
 	require.NoError(t, err, "could not get DB connection string")
 	db, err := database.NewPostgres(database.Config{
 		DSN:             connStr,
-		MaxOpenConns:    200,
-		MaxIdleConns:    5000,
-		ConnMaxLifetime: 600,
+		MaxConns:        common.Int32Ptr(200),
+		MinIdleConns:    common.Int32Ptr(5000),
+		ConnMaxLifetime: common.TimeDurationPtr(10 * time.Minute),
 	})
 	require.NoError(t, err)
 
