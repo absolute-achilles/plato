@@ -8,12 +8,16 @@ interface CourseCardProps {
   studentCount?: number
 }
 
-export function CourseCard({ course, progress, studentCount }: CourseCardProps) {
+export function CourseCard({
+  course,
+  progress,
+  studentCount,
+}: CourseCardProps) {
   return (
     <div className="clay-card flex flex-col gap-4 p-5">
       <div className="flex items-start justify-between gap-3">
         <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-clay-sm"
+          className="shadow-clay-sm flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white"
           style={{ backgroundColor: course.color }}
         >
           <BookOpen className="h-6 w-6" />

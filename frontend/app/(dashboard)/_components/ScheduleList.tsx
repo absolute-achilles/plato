@@ -48,7 +48,7 @@ export function ScheduleList({ events }: ScheduleListProps) {
         return (
           <li
             key={event.id}
-            className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-clay-sm transition-all hover:shadow-clay"
+            className="shadow-clay-sm hover:shadow-clay flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all"
           >
             <div
               className={cn(

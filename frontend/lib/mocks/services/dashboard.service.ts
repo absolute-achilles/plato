@@ -119,7 +119,9 @@ function buildStudentDashboard(): StudentDashboard {
 
 function buildParentDashboard(): ParentDashboard {
   const childIds = [student.id]
-  const childEnrollments = enrollments.filter((e) => childIds.includes(e.studentId))
+  const childEnrollments = enrollments.filter((e) =>
+    childIds.includes(e.studentId)
+  )
   const courseIds = childEnrollments.map((e) => e.courseId)
   const enrolledCourses = getCoursesByIds(courseIds)
   const avgProgress = Math.round(
@@ -176,10 +178,7 @@ function buildAdminDashboard(): AdminDashboard {
   }
 }
 
-export function getCourseProgress(
-  course: Course,
-  studentId: string
-): number {
+export function getCourseProgress(course: Course, studentId: string): number {
   const enrollment = enrollments.find(
     (e) => e.courseId === course.id && e.studentId === studentId
   )

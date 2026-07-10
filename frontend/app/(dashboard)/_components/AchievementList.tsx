@@ -30,7 +30,7 @@ export function AchievementList({ achievements }: AchievementListProps) {
         return (
           <div
             key={achievement.id}
-            className="flex flex-col items-center rounded-2xl border border-border bg-card p-4 text-center shadow-clay-sm transition-all hover:shadow-clay"
+            className="shadow-clay-sm hover:shadow-clay flex flex-col items-center rounded-2xl border border-border bg-card p-4 text-center transition-all"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Icon className="h-5 w-5" />

@@ -26,7 +26,7 @@ export function LoginCard() {
   const [password, setPassword] = useState("")
 
   return (
-    <Card className="w-full max-w-md overflow-hidden rounded-[2rem] border-border bg-card shadow-clay-lg">
+    <Card className="shadow-clay-lg w-full max-w-md overflow-hidden rounded-[2rem] border-border bg-card">
       <CardHeader className="space-y-1 bg-primary p-8 text-primary-foreground">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
           <GraduationCap className="h-8 w-8" />

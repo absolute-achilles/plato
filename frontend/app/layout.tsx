@@ -1,19 +1,20 @@
-import { Baloo_2, Comic_Neue } from "next/font/google"
+import { Fira_Code, Fira_Sans } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 
-const baloo2 = Baloo_2({
+const firaCode = Fira_Code({
   subsets: ["latin"],
-  variable: "--font-baloo",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-fira-code",
+  weight: ["400", "500", "600", "700"],
 })
 
-const comicNeue = Comic_Neue({
+const firaSans = Fira_Sans({
   subsets: ["latin"],
-  variable: "--font-comic",
-  weight: ["300", "400", "700"],
+  variable: "--font-fira-sans",
+  weight: ["300", "400", "500", "600", "700"],
 })
 
 export default function RootLayout({
@@ -25,10 +26,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", baloo2.variable, comicNeue.variable)}
+      className={cn("antialiased", firaCode.variable, firaSans.variable)}
     >
       <body className="font-sans">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   )

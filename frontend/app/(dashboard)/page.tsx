@@ -35,7 +35,12 @@ export default function DashboardPage() {
   const user = usersByRole[role]
   const [state, setState] = useState<{
     role: Role
-    data: TeacherDashboard | StudentDashboard | ParentDashboard | AdminDashboard | null
+    data:
+      | TeacherDashboard
+      | StudentDashboard
+      | ParentDashboard
+      | AdminDashboard
+      | null
     loaded: boolean
   }>(() => ({ role, data: null, loaded: false }))
 
@@ -98,9 +103,15 @@ export default function DashboardPage() {
       </section>
 
       {/* Role-specific content */}
-      {role === "teacher" && <TeacherContent dashboard={data as TeacherDashboard} />}
-      {role === "student" && <StudentContent dashboard={data as StudentDashboard} />}
-      {role === "parent" && <ParentContent dashboard={data as ParentDashboard} />}
+      {role === "teacher" && (
+        <TeacherContent dashboard={data as TeacherDashboard} />
+      )}
+      {role === "student" && (
+        <StudentContent dashboard={data as StudentDashboard} />
+      )}
+      {role === "parent" && (
+        <ParentContent dashboard={data as ParentDashboard} />
+      )}
       {role === "admin" && <AdminContent dashboard={data as AdminDashboard} />}
     </div>
   )
@@ -109,18 +120,14 @@ export default function DashboardPage() {
 function TeacherContent({ dashboard }: { dashboard: TeacherDashboard }) {
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 lg:col-span-2">
         <div>
           <h2 className="font-heading text-xl font-bold text-foreground">
             My Courses
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {dashboard.courses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                studentCount={12}
-              />
+              <CourseCard key={course.id} course={course} studentCount={12} />
             ))}
           </div>
         </div>
@@ -151,7 +158,7 @@ function TeacherContent({ dashboard }: { dashboard: TeacherDashboard }) {
 function StudentContent({ dashboard }: { dashboard: StudentDashboard }) {
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 lg:col-span-2">
         <div>
           <h2 className="font-heading text-xl font-bold text-foreground">
             My Courses
@@ -201,7 +208,7 @@ function StudentContent({ dashboard }: { dashboard: StudentDashboard }) {
 function ParentContent({ dashboard }: { dashboard: ParentDashboard }) {
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 lg:col-span-2">
         <div>
           <h2 className="font-heading text-xl font-bold text-foreground">
             Children&apos;s Courses
@@ -247,7 +254,7 @@ function ParentContent({ dashboard }: { dashboard: ParentDashboard }) {
 function AdminContent({ dashboard }: { dashboard: AdminDashboard }) {
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 lg:col-span-2">
         <div>
           <h2 className="font-heading text-xl font-bold text-foreground">
             Recent Courses
@@ -269,7 +276,7 @@ function AdminContent({ dashboard }: { dashboard: AdminDashboard }) {
             {dashboard.recentUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-clay-sm"
+                className="shadow-clay-sm flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
                   {user.name.charAt(0)}

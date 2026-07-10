@@ -1,23 +1,68 @@
 export type Role = "student" | "teacher" | "parent" | "admin"
 
+export type UserStatus = "active" | "inactive" | "pending" | "suspended"
+
 export interface User {
   id: string
   username: string
   name: string
+  displayName?: string
+  firstName?: string
+  lastName?: string
   email: string
   role: Role
   avatarUrl?: string
+  phone?: string
+  location?: string
+  bio?: string
+  timezone?: string
+  languages?: string[]
+  linkedInUrl?: string
+  websiteUrl?: string
+  portfolioUrl?: string
+  status?: UserStatus
+  lastActiveAt?: Date
+  joinDate?: Date
+  badges?: string[]
   createdAt: Date
 }
 
 export interface Student extends User {
   role: "student"
   parentId?: string
+  grade?: string
+  level?: string
+  enrolledCourses?: string[]
+  completedCourses?: number
+  inProgressCourses?: number
+  gpa?: number
+  attendanceRate?: number
+  averageScore?: number
+  certificatesCount?: number
+  interests?: string[]
+  achievements?: string[]
+  streakDays?: number
+  totalPoints?: number
+  rank?: string
+  mentorId?: string
+  preferredLearningStyle?: string
+  notes?: string
 }
 
 export interface Teacher extends User {
   role: "teacher"
-  bio?: string
+  department?: string
+  specializations?: string[]
+  yearsOfExperience?: number
+  totalCourses?: number
+  totalStudents?: number
+  averageRating?: number
+  twitterUrl?: string
+  awards?: string[]
+  availability?: string
+  isVerified?: boolean
+  isFeatured?: boolean
+  responseTime?: string
 }
 
 export interface Parent extends User {
@@ -29,27 +74,93 @@ export interface Admin extends User {
   role: "admin"
 }
 
+export type CourseStatus = "draft" | "published" | "archived"
+export type CourseLevel = "beginner" | "intermediate" | "advanced"
+
 export interface Course {
   id: string
   teacherId: string
+  teacherName?: string
+  teacherAvatar?: string
   name: string
   description: string
+  shortDescription?: string
   category: string
+  level?: CourseLevel
+  language?: string[]
+  subtitles?: string[]
+  prerequisites?: string[]
+  learningObjectives?: string[]
+  tags?: string[]
+  syllabus?: string[]
   color: string
   thumbnailUrl?: string
+  coverImageUrl?: string
+  duration?: number
+  studentCount?: number
+  moduleCount?: number
+  lessonCount?: number
+  rating?: number
+  reviewCount?: number
+  price?: number
+  currency?: string
+  status?: CourseStatus
+  progress?: number
+  startDate?: Date
+  endDate?: Date
+  enrollmentDeadline?: Date
+  certificateOffered?: boolean
+  certificateTemplate?: string
+  forumEnabled?: boolean
+  liveSessions?: string[]
+  faq?: string[]
+  refundPolicy?: string
+  estimatedHoursPerWeek?: number
+  lastUpdated?: Date
   createdAt: Date
   updatedAt: Date
 }
 
 export type ModuleContentType = "lesson" | "assignment"
+export type ModuleDifficulty = "beginner" | "intermediate" | "advanced"
+export type ModuleStatus = "draft" | "published" | "archived"
 
 export interface Module {
   id: string
   courseId: string
+  courseName?: string
   name: string
+  description?: string
+  shortDescription?: string
+  learningObjectives?: string[]
+  prerequisites?: string[]
+  difficulty?: ModuleDifficulty
+  category?: string
+  tags?: string[]
+  language?: string
   position: number
   isPublished: boolean
   unlockDate?: Date
+  thumbnailUrl?: string
+  videoUrl?: string
+  duration?: number
+  contentCount?: number
+  attachmentCount?: number
+  quizCount?: number
+  assignmentCount?: number
+  forumPostCount?: number
+  totalPoints?: number
+  passingScore?: number
+  certificateEligible?: boolean
+  isMandatory?: boolean
+  estimatedHours?: number
+  resources?: string[]
+  sections?: string[]
+  enrollmentCount?: number
+  averageRating?: number
+  completionRate?: number
+  status?: ModuleStatus
+  createdBy?: string
   createdAt: Date
   updatedAt: Date
 }
