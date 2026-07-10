@@ -21,8 +21,39 @@ type User struct {
 	Email        string    `db:"email"      json:"email"`
 	HashPassword string    `db:"hash_password"   json:"-"`
 	Role         Role      `db:"role"       json:"role"`
+	PhoneNumber  string    `db:"phone_number" json:"phone_number,omitempty"`
 	CreatedAt    time.Time `db:"created_at" json:"created_at"`
 }
+
+type Department string
+
+const (
+	DepartmentMathematics      Department = "Mathematics"
+	DepartmentScience          Department = "Science"
+	DepartmentEnglish          Department = "English"
+	DepartmentHistory          Department = "History"
+	DepartmentArts             Department = "Arts"
+	DepartmentPhysicalEducation Department = "Physical Education"
+	DepartmentComputerScience  Department = "Computer Science"
+	DepartmentOther            Department = "Other"
+)
+
+type GradeLevel string
+
+const (
+	GradeLevel1  GradeLevel = "Grade 1"
+	GradeLevel2  GradeLevel = "Grade 2"
+	GradeLevel3  GradeLevel = "Grade 3"
+	GradeLevel4  GradeLevel = "Grade 4"
+	GradeLevel5  GradeLevel = "Grade 5"
+	GradeLevel6  GradeLevel = "Grade 6"
+	GradeLevel7  GradeLevel = "Grade 7"
+	GradeLevel8  GradeLevel = "Grade 8"
+	GradeLevel9  GradeLevel = "Grade 9"
+	GradeLevel10 GradeLevel = "Grade 10"
+	GradeLevel11 GradeLevel = "Grade 11"
+	GradeLevel12 GradeLevel = "Grade 12"
+)
 
 type ParentRelationship string
 
@@ -30,18 +61,31 @@ const (
 	ParentRelationshipFather   ParentRelationship = "father"
 	ParentRelationshipMother   ParentRelationship = "mother"
 	ParentRelationshipGuardian ParentRelationship = "guardian"
+	ParentRelationshipOther    ParentRelationship = "other"
 )
+
+type ParentStudentLink struct {
+	ID        string             `db:"id"         json:"id"`
+	ParentID  string             `db:"parent_id"  json:"parent_id"`
+	StudentID string             `db:"student_id" json:"student_id"`
+	Type      ParentRelationship `db:"type"       json:"type"`
+	CreatedAt time.Time          `db:"created_at" json:"created_at"`
+}
 
 type Parent struct {
 	User
+	Type      ParentRelationship `db:"type"       json:"type"`
+	StudentIDs []string          `json:"student_ids,omitempty"`
 }
 
 type Student struct {
 	User
+	GradeLevel GradeLevel `db:"grade_level" json:"grade_level"`
 }
 
 type Teacher struct {
 	User
+	Department Department `db:"department" json:"department"`
 }
 
 type Admin struct {

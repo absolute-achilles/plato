@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
@@ -41,8 +42,8 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
-		INSERT INTO users (username, email, hash_password, role)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO users (username, email, hash_password, role, phone_number)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
 
@@ -53,9 +54,19 @@ func (r *adminRepository) Create(ctx context.Context, admin *domain.Admin) error
 		admin.Email,
 		hashedPassword,
 		domain.RoleAdmin,
+		admin.PhoneNumber,
 	).Scan(&admin.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to insert user: %w", err)
+		switch {
+		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "email"):
+			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateEmail)
+		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "username"):
+			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateName)
+		case strings.Contains(err.Error(), "23505"):
+			return fmt.Errorf("Failed to insert user: %w", domain.ErrDuplicate)
+		default:
+			return fmt.Errorf("Failed to insert user: %w", err)
+		}
 	}
 
 	adminQuery := `INSERT INTO admins (user_id) VALUES ($1)`

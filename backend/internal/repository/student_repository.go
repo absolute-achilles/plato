@@ -42,8 +42,8 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
-		INSERT INTO users (username, email, hash_password, role)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO users (username, email, hash_password, role, phone_number)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
 
@@ -54,17 +54,14 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		student.Email,
 		hashedPassword,
 		domain.RoleStudent,
+		student.PhoneNumber,
 	).Scan(&student.ID)
 	if err != nil {
 		switch {
-		// Duplicate
 		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "email"):
 			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateEmail)
-		// Duplicate
-		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "name"):
+		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "username"):
 			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateName)
-
-		// Duplicate
 		case strings.Contains(err.Error(), "23505"):
 			return fmt.Errorf("Failed to insert user: %w", domain.ErrDuplicate)
 		default:
@@ -72,8 +69,8 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		}
 	}
 
-	studentQuery := `INSERT INTO students (user_id) VALUES ($1)`
-	_, err = tx.Exec(ctx, studentQuery, student.ID)
+	studentQuery := `INSERT INTO students (user_id, grade_level) VALUES ($1, $2)`
+	_, err = tx.Exec(ctx, studentQuery, student.ID, student.GradeLevel)
 	if err != nil {
 		return fmt.Errorf("Failed to insert student: %w", err)
 	}

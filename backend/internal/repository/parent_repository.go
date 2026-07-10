@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/absolute-achilles/plato/internal/domain"
 	"github.com/absolute-achilles/plato/internal/utils"
@@ -41,8 +42,8 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 	defer tx.Rollback(ctx)
 
 	insertUserQuery := `
-		INSERT INTO users (username, email, hash_password, role)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO users (username, email, hash_password, role, phone_number)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
 
@@ -53,15 +54,36 @@ func (r *parentRepository) Create(ctx context.Context, parent *domain.Parent) er
 		parent.Email,
 		hashedPassword,
 		domain.RoleParent,
+		parent.PhoneNumber,
 	).Scan(&parent.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to insert user: %w", err)
+		switch {
+		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "email"):
+			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateEmail)
+		case strings.Contains(err.Error(), "23505") && strings.Contains(err.Error(), "username"):
+			return fmt.Errorf("Failed to insert user: %w", ErrDuplicateName)
+		case strings.Contains(err.Error(), "23505"):
+			return fmt.Errorf("Failed to insert user: %w", domain.ErrDuplicate)
+		default:
+			return fmt.Errorf("Failed to insert user: %w", err)
+		}
 	}
 
-	parentQuery := `INSERT INTO parents (user_id) VALUES ($1)`
-	_, err = tx.Exec(ctx, parentQuery, parent.ID)
+	parentQuery := `INSERT INTO parents (user_id, type) VALUES ($1, $2)`
+	_, err = tx.Exec(ctx, parentQuery, parent.ID, parent.Type)
 	if err != nil {
 		return fmt.Errorf("Failed to insert parent: %w", err)
+	}
+
+	for _, studentID := range parent.StudentIDs {
+		linkQuery := `
+			INSERT INTO parent_student_links (parent_id, student_id)
+			VALUES ($1, $2)
+			ON CONFLICT (parent_id, student_id) DO NOTHING
+		`
+		if _, err := tx.Exec(ctx, linkQuery, parent.ID, studentID); err != nil {
+			return fmt.Errorf("Failed to link parent to student %s: %w", studentID, err)
+		}
 	}
 
 	return tx.Commit(ctx)
