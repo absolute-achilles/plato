@@ -42,3 +42,13 @@
 - `main.go` currently has the database connection block commented out. The app starts without a DB connection and only exposes a health-check endpoint.
 - Logger writes to both `logs/app.log` and stdout; the `logs/` directory is created at runtime.
 - No CI workflows, linting config (e.g., `.golangci.yml`), or pre-commit hooks are present yet.
+
+## Memory (agentmemory)
+
+Use `memory_save` and `memory_recall` to persist and retrieve project context across sessions.
+
+- **Always save** architectural decisions, discovered gotchas, and workflow patterns.
+- Use `project: "plato"` for all memories in this project.
+- Use `type` field: `architecture`, `bug`, `workflow`, `pattern`, `fact`.
+- Add `concepts` and `files` for precise recall later.
+- **Recall at session start** to check for existing context before investigating.
