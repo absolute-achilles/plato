@@ -90,6 +90,18 @@ backend-build:
 frontend-build:
     cd {{frontend_dir}} && pnpm build
 
+# Run Playwright end-to-end tests (starts the full stack automatically)
+test-e2e:
+    cd {{frontend_dir}} && pnpm test:e2e
+
+# Run Playwright tests in interactive UI mode
+test-e2e-ui:
+    cd {{frontend_dir}} && pnpm test:e2e:ui
+
+# Run Playwright tests in debug mode
+test-e2e-debug:
+    cd {{frontend_dir}} && pnpm test:e2e:debug
+
 # -----------------------------------------------------------------------------
 # Lint and format
 # -----------------------------------------------------------------------------
@@ -128,3 +140,4 @@ alias b := backend-test
 alias f := frontend-test
 alias t := test
 alias l := lint
+alias e2e := test-e2e
