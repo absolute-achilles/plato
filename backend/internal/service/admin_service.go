@@ -34,13 +34,20 @@ func NewAdminService(
 	}
 }
 
+func stringPtrOrNil(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
 func (s *adminService) CreateTeacher(ctx context.Context, req *dto.CreateTeacherRequest) (*dto.TeacherResponse, error) {
 	teacher := &domain.Teacher{
 		User: domain.User{
 			Username:     req.Username,
 			Email:        req.Email,
 			HashPassword: req.Password,
-			PhoneNumber:  req.PhoneNumber,
+			PhoneNumber:  stringPtrOrNil(req.PhoneNumber),
 		},
 		Department: req.Department,
 	}
@@ -70,7 +77,7 @@ func (s *adminService) CreateStudent(ctx context.Context, req *dto.CreateStudent
 			Username:     req.Username,
 			Email:        req.Email,
 			HashPassword: req.Password,
-			PhoneNumber:  req.PhoneNumber,
+			PhoneNumber:  stringPtrOrNil(req.PhoneNumber),
 		},
 		GradeLevel: req.GradeLevel,
 	}
@@ -100,7 +107,7 @@ func (s *adminService) CreateParent(ctx context.Context, req *dto.CreateParentRe
 			Username:     req.Username,
 			Email:        req.Email,
 			HashPassword: req.Password,
-			PhoneNumber:  req.PhoneNumber,
+			PhoneNumber:  stringPtrOrNil(req.PhoneNumber),
 		},
 		Type:       req.Type,
 		StudentIDs: req.StudentIDs,

@@ -17,12 +17,12 @@ type CreateStudentRequest struct {
 
 // StudentResponse is the student shape returned to the client.
 type StudentResponse struct {
-	ID          string         `json:"id"`
-	Username    string         `json:"username"`
-	Name        string         `json:"name"`
-	Email       string         `json:"email"`
-	Role        domain.Role    `json:"role"`
-	PhoneNumber string         `json:"phone_number,omitempty"`
+	ID          string            `json:"id"`
+	Username    string            `json:"username"`
+	Name        string            `json:"name"`
+	Email       string            `json:"email"`
+	Role        domain.Role       `json:"role"`
+	PhoneNumber *string           `json:"phone_number,omitempty"`
 	GradeLevel  domain.GradeLevel `json:"grade_level"`
-	CreatedAt   time.Time      `json:"created_at"`
+	CreatedAt   time.Time         `json:"created_at"`
 }

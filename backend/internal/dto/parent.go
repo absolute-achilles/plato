@@ -23,7 +23,7 @@ type ParentResponse struct {
 	Name        string                    `json:"name"`
 	Email       string                    `json:"email"`
 	Role        domain.Role               `json:"role"`
-	PhoneNumber string                    `json:"phone_number,omitempty"`
+	PhoneNumber *string                   `json:"phone_number,omitempty"`
 	Type        domain.ParentRelationship `json:"type"`
 	StudentIDs  []string                  `json:"student_ids"`
 	CreatedAt   time.Time                 `json:"created_at"`

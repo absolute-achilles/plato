@@ -29,6 +29,6 @@ type UserResponse struct {
 	Name        string      `json:"name"`
 	Email       string      `json:"email"`
 	Role        domain.Role `json:"role"`
-	PhoneNumber string      `json:"phone_number,omitempty"`
+	PhoneNumber *string     `json:"phone_number,omitempty"`
 	CreatedAt   string      `json:"created_at"`
 }
