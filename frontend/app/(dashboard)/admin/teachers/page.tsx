@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/table"
 import { allTeachers } from "@/lib/mocks/data"
 import type { Teacher } from "@/lib/mocks/types"
+import type { TeacherResponse } from "@/lib/api/types"
 
+import { CreateTeacherDialog } from "./_components/CreateTeacherDialog"
 import { DetailDialog } from "../../_components/DetailDialog"
 import { PageHeader, StatPill } from "../../_components/PageHeader"
 import { PaginationControls } from "../../_components/PaginationControls"
@@ -52,6 +54,23 @@ const sortOptions = [
   { label: "Most Students", value: "students" },
 ]
 
+function mapApiTeacherToTeacher(apiTeacher: TeacherResponse): Teacher {
+  return {
+    id: apiTeacher.id,
+    username: apiTeacher.username,
+    name: apiTeacher.name,
+    email: apiTeacher.email,
+    role: "teacher",
+    department: apiTeacher.department,
+    status: "active",
+    yearsOfExperience: 0,
+    totalStudents: 0,
+    averageRating: 0,
+    isVerified: true,
+    createdAt: new Date(apiTeacher.created_at),
+  }
+}
+
 export default function TeachersPage() {
   const [search, setSearch] = useState("")
   const [departmentFilter, setDepartmentFilter] = useState("All")
@@ -60,9 +79,14 @@ export default function TeachersPage() {
   const [sortBy, setSortBy] = useState("name-asc")
   const [page, setPage] = useState(1)
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null)
+  const [teachers, setTeachers] = useState<Teacher[]>(allTeachers)
+
+  const handleTeacherCreated = (apiTeacher: TeacherResponse) => {
+    setTeachers((prev) => [mapApiTeacherToTeacher(apiTeacher), ...prev])
+  }
 
   const filtered = useMemo(() => {
-    let data = [...allTeachers]
+    let data = [...teachers]
 
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -108,7 +132,7 @@ export default function TeachersPage() {
     }
 
     return data
-  }, [search, departmentFilter, statusFilter, verifiedFilter, sortBy])
+  }, [search, departmentFilter, statusFilter, verifiedFilter, sortBy, teachers])
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -119,7 +143,10 @@ export default function TeachersPage() {
         title="Teachers"
         description="Manage and review all platform teachers."
       >
-        <StatPill label="Total" value={filtered.length} />
+        <div className="flex items-center gap-3">
+          <StatPill label="Total" value={filtered.length} />
+          <CreateTeacherDialog onCreated={handleTeacherCreated} />
+        </div>
       </PageHeader>
 
       <SearchFilters
