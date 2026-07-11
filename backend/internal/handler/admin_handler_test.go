@@ -142,3 +142,28 @@ func TestAdminHandler_CreateTeacherValidationError(t *testing.T) {
 	r.ServeHTTP(w, req)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 }
+
+func TestAdminHandler_CreateTeacherUnauthorized(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	adminSvc := &mockAdminService{}
+	authSvc := &mockAuthService{}
+
+	handler := NewAdminHandler(adminSvc, authSvc)
+	r := gin.New()
+	api := r.Group("/api/v1")
+	handler.RegisterRoutes(api)
+
+	body, _ := json.Marshal(dto.CreateTeacherRequest{
+		Username:   "budi.santoso",
+		Email:      "budi@plato.edu",
+		Password:   "password123",
+		Department: domain.DepartmentMathematics,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/admin/teachers", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusUnauthorized, w.Code)
+}

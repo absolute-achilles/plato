@@ -135,3 +135,61 @@ func TestAuthHandler_ChangePassword(t *testing.T) {
 	r.ServeHTTP(w, req)
 	require.Equal(t, http.StatusNoContent, w.Code)
 }
+
+func TestAuthHandler_Me(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	authSvc := &mockAuthService{
+		meFunc: func(ctx context.Context, userID string) (*dto.UserResponse, error) {
+			return &dto.UserResponse{
+				ID:       userID,
+				Username: "admin",
+				Email:    "admin@plato.local",
+				Role:     domain.RoleAdmin,
+			}, nil
+		},
+		parseAccessToken: func(token string) (*service.AccessTokenClaims, error) {
+			return &service.AccessTokenClaims{
+				UserID: "user-1",
+				Email:  "admin@plato.local",
+				Role:   domain.RoleAdmin,
+				Type:   "access",
+			}, nil
+		},
+	}
+
+	handler := NewAuthHandler(authSvc)
+	r := gin.New()
+	api := r.Group("/api/v1")
+	handler.RegisterRoutes(api)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/auth/me", nil)
+	req.Header.Set("Authorization", "Bearer valid-token")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var env response.Envelope
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &env))
+	data, _ := json.Marshal(env.Data)
+	var resp dto.UserResponse
+	require.NoError(t, json.Unmarshal(data, &resp))
+	require.Equal(t, "admin", resp.Username)
+}
+
+func TestAuthHandler_MeUnauthorized(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	authSvc := &mockAuthService{}
+	handler := NewAuthHandler(authSvc)
+	r := gin.New()
+	api := r.Group("/api/v1")
+	handler.RegisterRoutes(api)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/auth/me", nil)
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+	require.Equal(t, http.StatusUnauthorized, w.Code)
+}
