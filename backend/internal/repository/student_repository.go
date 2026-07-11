@@ -35,6 +35,11 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
+	gradeLevel := student.GradeLevel
+	if gradeLevel == "" {
+		gradeLevel = domain.GradeLevel1
+	}
+
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -70,7 +75,7 @@ func (r *studentRepository) Create(ctx context.Context, student *domain.Student)
 	}
 
 	studentQuery := `INSERT INTO students (user_id, grade_level) VALUES ($1, $2)`
-	_, err = tx.Exec(ctx, studentQuery, student.ID, student.GradeLevel)
+	_, err = tx.Exec(ctx, studentQuery, student.ID, gradeLevel)
 	if err != nil {
 		return fmt.Errorf("Failed to insert student: %w", err)
 	}

@@ -35,6 +35,11 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 		return fmt.Errorf("Failed to hash password: %w", err)
 	}
 
+	department := teacher.Department
+	if department == "" {
+		department = domain.DepartmentOther
+	}
+
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -70,7 +75,7 @@ func (r *teacherRepository) Create(ctx context.Context, teacher *domain.Teacher)
 	}
 
 	teacherQuery := `INSERT INTO teachers (user_id, department) VALUES ($1, $2)`
-	_, err = tx.Exec(ctx, teacherQuery, teacher.ID, teacher.Department)
+	_, err = tx.Exec(ctx, teacherQuery, teacher.ID, department)
 	if err != nil {
 		return fmt.Errorf("Failed to insert teacher: %w", err)
 	}
