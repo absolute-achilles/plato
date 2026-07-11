@@ -9,10 +9,14 @@ import (
 	"github.com/absolute-achilles/plato/internal/middleware"
 	"github.com/absolute-achilles/plato/internal/repository"
 	"github.com/absolute-achilles/plato/internal/service"
+	"github.com/absolute-achilles/plato/migrations"
 	"github.com/absolute-achilles/plato/pkg/database"
 	"github.com/absolute-achilles/plato/pkg/logger"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 )
 
 const (
@@ -55,6 +59,11 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	if err := runMigrations(os.Getenv("DATABASE_URL")); err != nil {
+		slog.Error("failed to run migrations", "error", err)
+		os.Exit(1)
+	}
 
 	// 2. Create repositories
 	userRepo := repository.NewUserRepository(db)
@@ -100,4 +109,20 @@ func main() {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
 	}
+}
+
+func runMigrations(databaseURL string) error {
+	d, err := iofs.New(migrations.FS, ".")
+	if err != nil {
+		return err
+	}
+	m, err := migrate.NewWithSourceInstance("iofs", d, databaseURL)
+	if err != nil {
+		return err
+	}
+	defer m.Close()
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+	return nil
 }
