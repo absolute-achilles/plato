@@ -31,6 +31,7 @@ func DefaultAuthConfig(secret string) AuthConfig {
 
 type AuthService interface {
 	Login(ctx context.Context, req *dto.LoginRequest) (*dto.TokenResponse, error)
+	Me(ctx context.Context, userID string) (*dto.UserResponse, error)
 	ChangePassword(ctx context.Context, userID string, req *dto.ChangePasswordRequest) error
 	ParseAccessToken(tokenString string) (*AccessTokenClaims, error)
 	ParseRefreshToken(tokenString string) (*RefreshTokenClaims, error)
@@ -86,16 +87,32 @@ func (s *authService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.To
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresIn:    int(s.cfg.AccessTokenTTL.Seconds()),
-		User:         dto.UserResponse{
-			ID:          user.ID,
-			Username:    user.Username,
-			Name:        user.Username,
-			Email:       user.Email,
-			Role:        user.Role,
-			PhoneNumber: user.PhoneNumber,
-			CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		},
+		User:         toUserResponse(user),
 	}, nil
+}
+
+func (s *authService) Me(ctx context.Context, userID string) (*dto.UserResponse, error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			return nil, domain.ErrNotFound
+		}
+		return nil, fmt.Errorf("authService.Me: %w", err)
+	}
+	resp := toUserResponse(user)
+	return &resp, nil
+}
+
+func toUserResponse(user *domain.User) dto.UserResponse {
+	return dto.UserResponse{
+		ID:          user.ID,
+		Username:    user.Username,
+		Name:        user.Username,
+		Email:       user.Email,
+		Role:        user.Role,
+		PhoneNumber: user.PhoneNumber,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+	}
 }
 
 func (s *authService) ChangePassword(ctx context.Context, userID string, req *dto.ChangePasswordRequest) error {

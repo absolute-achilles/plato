@@ -139,6 +139,24 @@ func TestAuthService_ChangePassword(t *testing.T) {
 	})
 }
 
+func TestAuthService_Me(t *testing.T) {
+	ctx := context.Background()
+	repo := newMockUserRepository()
+	user := repo.seed("admin@plato.local", "admin12345", domain.RoleAdmin)
+
+	cfg := DefaultAuthConfig("test-secret")
+	svc := NewAuthService(repo, cfg)
+
+	resp, err := svc.Me(ctx, user.ID)
+	require.NoError(t, err)
+	require.Equal(t, user.ID, resp.ID)
+	require.Equal(t, user.Email, resp.Email)
+	require.Equal(t, user.Role, resp.Role)
+
+	_, err = svc.Me(ctx, "missing-id")
+	require.ErrorIs(t, err, domain.ErrNotFound)
+}
+
 func TestAuthService_TokenValidation(t *testing.T) {
 	ctx := context.Background()
 	repo := newMockUserRepository()

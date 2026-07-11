@@ -18,6 +18,7 @@ import (
 
 type mockAuthService struct {
 	loginFunc          func(ctx context.Context, req *dto.LoginRequest) (*dto.TokenResponse, error)
+	meFunc             func(ctx context.Context, userID string) (*dto.UserResponse, error)
 	changePasswordFunc func(ctx context.Context, userID string, req *dto.ChangePasswordRequest) error
 	parseAccessToken   func(token string) (*service.AccessTokenClaims, error)
 	parseRefreshToken  func(token string) (*service.RefreshTokenClaims, error)
@@ -25,6 +26,10 @@ type mockAuthService struct {
 
 func (m *mockAuthService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.TokenResponse, error) {
 	return m.loginFunc(ctx, req)
+}
+
+func (m *mockAuthService) Me(ctx context.Context, userID string) (*dto.UserResponse, error) {
+	return m.meFunc(ctx, userID)
 }
 
 func (m *mockAuthService) ChangePassword(ctx context.Context, userID string, req *dto.ChangePasswordRequest) error {

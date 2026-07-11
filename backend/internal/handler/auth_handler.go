@@ -23,6 +23,7 @@ func (h *AuthHandler) RegisterRoutes(api *gin.RouterGroup) {
 	{
 		auth.POST("/login", h.login)
 		auth.POST("/change-password", middleware.AuthMiddleware(h.svc), h.changePassword)
+		auth.GET("/me", middleware.AuthMiddleware(h.svc), h.me)
 	}
 }
 
@@ -62,6 +63,22 @@ func (h *AuthHandler) changePassword(c *gin.Context) {
 	}
 
 	response.NoContent(c)
+}
+
+func (h *AuthHandler) me(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		response.Unauthorized(c, "user not authenticated")
+		return
+	}
+
+	user, err := h.svc.Me(c.Request.Context(), userID)
+	if err != nil {
+		response.Unauthorized(c, "user not found")
+		return
+	}
+
+	response.OK(c, user)
 }
 
 func setTokenCookies(c *gin.Context, accessToken, refreshToken string) {
