@@ -9,7 +9,7 @@ test.describe("authentication", () => {
       "admin12345")
     await page.click('button[type="submit"]')
 
-    await page.waitForURL("/")
+    await expect(page).toHaveURL("/", { timeout: 10000 })
     await expect(page.locator("text=Platform overview at a glance")).toBeVisible()
   })
 

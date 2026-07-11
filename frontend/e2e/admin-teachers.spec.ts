@@ -10,7 +10,7 @@ test.describe("admin teachers", () => {
     await page.fill('input[id="password"]',
       "admin12345")
     await page.click('button[type="submit"]')
-    await page.waitForURL("/")
+    await expect(page).toHaveURL("/", { timeout: 10000 })
   })
 
   test("admin can create a teacher", async ({ page }) => {
