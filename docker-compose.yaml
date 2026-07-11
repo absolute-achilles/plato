@@ -11,19 +11,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d dbname"]
+      test: ["CMD-SHELL", "pg_isready -U user -d plato"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: plato-backend
     environment:
-      # The database host is now 'db' (the service name), not 'localhost'
-      - DB_URL=postgres://user:pass@db:5432/plato?sslmode=disable
+      - DATABASE_URL=postgres://user:pass@db:5432/plato?sslmode=disable
+      - JWT_SECRET=change-me-in-production
     ports:
       - "8080:8080"
     depends_on:
