@@ -31,16 +31,23 @@ logs:
 # Local development
 # -----------------------------------------------------------------------------
 
-# Run the backend dev server (requires a local Postgres on :5432)
-backend-dev:
+# Start the Postgres database container (used by local dev/tests)
+db:
+    docker compose -f {{compose_file}} up -d db
+    @echo "Waiting for Postgres to be healthy..."
+    @until docker compose -f {{compose_file}} ps db | grep -q "healthy"; do sleep 1; done
+    @echo "Postgres is ready at {{database_url}}"
+
+# Run the backend dev server (auto-starts Postgres)
+backend-dev: db
     cd {{backend_dir}} && DATABASE_URL={{database_url}} JWT_SECRET=dev-secret go run cmd/api/main.go
 
 # Run the frontend dev server
 frontend-dev:
     cd {{frontend_dir}} && pnpm dev
 
-# Run backend and frontend dev servers together
-dev:
+# Run backend and frontend dev servers together (auto-starts Postgres)
+dev: db
     #!/usr/bin/env bash
     set -euo pipefail
     cd {{backend_dir}} && DATABASE_URL={{database_url}} JWT_SECRET=dev-secret go run cmd/api/main.go &
@@ -59,7 +66,7 @@ backend-test:
     cd {{backend_dir}} && go test ./internal/service/... ./internal/handler/... -v --count=1
 
 # Run all backend tests including repository tests (Docker required)
-backend-test-all:
+backend-test-all: db
     cd {{backend_dir}} && go test ./... -v --count=1
 
 # Run frontend type checks and lint
@@ -102,11 +109,11 @@ format:
 # -----------------------------------------------------------------------------
 
 # Apply all pending migrations
-migrate-up:
+migrate-up: db
     cd {{backend_dir}} && migrate -database {{database_url}} -path {{migration_path}} up
 
 # Roll back the last migration
-migrate-down:
+migrate-down: db
     cd {{backend_dir}} && migrate -database {{database_url}} -path {{migration_path}} down 1
 
 # Create a new migration pair (usage: just migrate-create add_user_profile)
