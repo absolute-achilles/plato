@@ -1,28 +1,38 @@
-CREATE TYPE IF NOT EXISTS teacher_department AS ENUM (
-  'Mathematics',
-  'Science',
-  'English',
-  'History',
-  'Arts',
-  'Physical Education',
-  'Computer Science',
-  'Other'
-);
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'teacher_department') THEN
+        CREATE TYPE teacher_department AS ENUM (
+            'Mathematics',
+            'Science',
+            'English',
+            'History',
+            'Arts',
+            'Physical Education',
+            'Computer Science',
+            'Other'
+        );
+    END IF;
+END$$;
 
-CREATE TYPE IF NOT EXISTS student_grade_level AS ENUM (
-  'Grade 1',
-  'Grade 2',
-  'Grade 3',
-  'Grade 4',
-  'Grade 5',
-  'Grade 6',
-  'Grade 7',
-  'Grade 8',
-  'Grade 9',
-  'Grade 10',
-  'Grade 11',
-  'Grade 12'
-);
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'student_grade_level') THEN
+        CREATE TYPE student_grade_level AS ENUM (
+            'Grade 1',
+            'Grade 2',
+            'Grade 3',
+            'Grade 4',
+            'Grade 5',
+            'Grade 6',
+            'Grade 7',
+            'Grade 8',
+            'Grade 9',
+            'Grade 10',
+            'Grade 11',
+            'Grade 12'
+        );
+    END IF;
+END$$;
 
 ALTER TABLE teachers
   ADD COLUMN IF NOT EXISTS department teacher_department NOT NULL DEFAULT 'Other';
