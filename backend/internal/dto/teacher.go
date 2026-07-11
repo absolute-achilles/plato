@@ -1,19 +1,28 @@
 package dto
 
-import "github.com/absolute-achilles/plato/internal/domain"
+import (
+	"time"
 
-// CreateTeacherRequest — HTTP input
+	"github.com/absolute-achilles/plato/internal/domain"
+)
+
+// CreateTeacherRequest is the HTTP input for creating a teacher.
 type CreateTeacherRequest struct {
-	Name     string `json:"name"  binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-	// Role     domain.Role `json:"role"  binding:"required,oneof=student teacher parent admin"`
+	Username    string           `json:"username"     binding:"required"`
+	Email       string           `json:"email"        binding:"required,email"`
+	Password    string           `json:"password"     binding:"required,min=8"`
+	PhoneNumber string           `json:"phone_number,omitempty"`
+	Department  domain.Department `json:"department"  binding:"required,oneof=Mathematics Science English History Arts Physical Education Computer Science Other"`
 }
 
-// UserResponse — controls exactly what fields go back to the client
+// TeacherResponse is the teacher shape returned to the client.
 type TeacherResponse struct {
-	ID    string      `json:"id"`
-	Name  string      `json:"name"`
-	Email string      `json:"email"`
-	Role  domain.Role `json:"role"`
+	ID          string           `json:"id"`
+	Username    string           `json:"username"`
+	Name        string           `json:"name"`
+	Email       string           `json:"email"`
+	Role        domain.Role      `json:"role"`
+	PhoneNumber string           `json:"phone_number,omitempty"`
+	Department  domain.Department `json:"department"`
+	CreatedAt   time.Time        `json:"created_at"`
 }

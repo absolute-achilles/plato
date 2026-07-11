@@ -81,7 +81,12 @@ func (r *userRepository) ChangePassword(ctx context.Context, id, oldPassword, ne
 	WHERE id = $2
 	`
 
-	result, err := r.db.Exec(ctx, queryUpdatePassword, newPassword, id)
+	hashedNewPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("userRepository.ChangePassword: failed to hash password: %w", err)
+	}
+
+	result, err := r.db.Exec(ctx, queryUpdatePassword, hashedNewPassword, id)
 	if err != nil {
 		return fmt.Errorf("userRepository.ChangePassword: %w", err)
 	}
