@@ -38,13 +38,14 @@ func TestStudentRepositoryE2E(t *testing.T) {
 
 	t.Run("Create Student and Get Student", func(t *testing.T) {
 		t.Parallel()
-		student := &domain.Student{
-			User: domain.User{
-				Username:     "John Doe Student",
-				Email:        "student@gmail.com",
-				HashPassword: "Skibidi12345",
-			},
-		}
+	student := &domain.Student{
+		User: domain.User{
+			Username:     "John Doe Student",
+			Email:        "student@gmail.com",
+			HashPassword: "Skibidi12345",
+		},
+		GradeLevel: domain.GradeLevel10,
+	}
 
 		err := studentRepo.Create(ctx, student)
 		require.NoError(t, err)

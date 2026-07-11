@@ -38,13 +38,13 @@ func TestAdminRepositoryE2E(t *testing.T) {
 
 	t.Run("Create Admin and Get Admin", func(t *testing.T) {
 		t.Parallel()
-		admin := &domain.Admin{
-			User: domain.User{
-				Username:     "John Doe Teacher",
-				Email:        "student@gmail.com",
-				HashPassword: "Skibidi12345",
-			},
-		}
+	admin := &domain.Admin{
+		User: domain.User{
+			Username:     "John Doe Admin",
+			Email:        "admin-test@gmail.com",
+			HashPassword: "Skibidi12345",
+		},
+	}
 
 		err := adminRepo.Create(ctx, admin)
 		require.NoError(t, err)

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/absolute-achilles/plato/internal/domain"
+	"github.com/absolute-achilles/plato/internal/utils"
 	"github.com/absolute-achilles/plato/pkg/common"
 	"github.com/absolute-achilles/plato/pkg/database"
 	"github.com/stretchr/testify/require"
@@ -62,6 +63,13 @@ func TestUserRepositoryE2E(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, user.Username, student.Username)
 		require.Equal(t, user.Username, student.Username)
+	})
+
+	t.Run("Get user by ID not found", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := userRepo.GetByID(ctx, "00000000-0000-0000-0000-000000000000")
+		require.ErrorIs(t, err, domain.ErrNotFound)
 	})
 
 	t.Run("Check duplicate email user", func(t *testing.T) {
@@ -186,6 +194,10 @@ func TestUserRepositoryE2E(t *testing.T) {
 		// correct old password
 		err = userRepo.ChangePassword(ctx, student.ID, "SkibidiToilet", "Hulk")
 		require.NoError(t, err)
+
+		user, err := userRepo.GetByID(ctx, student.ID)
+		require.NoError(t, err)
+		require.True(t, utils.CheckHashPassword("Hulk", user.HashPassword))
 	})
 
 	t.Run("Delete User", func(t *testing.T) {

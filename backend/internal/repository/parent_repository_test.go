@@ -33,29 +33,43 @@ func TestParentRepositoryE2E(t *testing.T) {
 	require.NoError(t, err)
 
 	userRepo := NewUserRepository(db)
-
+	studentRepo := NewStudentRepository(db)
 	parentRepo := NewParentRepository(db)
 
 	t.Run("Create Parent and Get Parent", func(t *testing.T) {
 		t.Parallel()
-		parent := &domain.Parent{
+
+		student := &domain.Student{
 			User: domain.User{
-				Username:     "John Doe Teacher",
-				Email:        "student@gmail.com",
+				Username:     "Student Child",
+				Email:        "studentchild@gmail.com",
 				HashPassword: "Skibidi12345",
 			},
+			GradeLevel: domain.GradeLevel5,
 		}
-
-		err := parentRepo.Create(ctx, parent)
+		err := studentRepo.Create(ctx, student)
 		require.NoError(t, err)
 
-		// Check if student does exist in db by email
+		parent := &domain.Parent{
+			User: domain.User{
+				Username:     "John Doe Parent",
+				Email:        "parent@gmail.com",
+				HashPassword: "Skibidi12345",
+			},
+			Type:       domain.ParentRelationshipFather,
+			StudentIDs: []string{student.ID},
+		}
+
+		err = parentRepo.Create(ctx, parent)
+		require.NoError(t, err)
+
+		// Check if parent exists in db by email
 		user, err := userRepo.GetByEmail(ctx, parent.Email)
 		require.NoError(t, err)
 		require.Equal(t, user.Email, parent.Email)
 		require.Equal(t, user.Username, parent.Username)
 
-		// Check if student does exist in db by ID
+		// Check if parent exists in db by ID
 		user, err = userRepo.GetByID(ctx, parent.ID)
 		require.NoError(t, err)
 		require.Equal(t, user.Email, parent.Email)
