@@ -50,6 +50,8 @@ frontend-dev:
 dev: db
     #!/usr/bin/env bash
     set -euo pipefail
+    # Stop the Docker backend container so the local backend can use port 8080
+    docker compose stop backend 2>/dev/null || true
     cd {{backend_dir}} && DATABASE_URL={{database_url}} JWT_SECRET=dev-secret go run cmd/api/main.go &
     BACKEND_PID=$!
     cd {{frontend_dir}} && pnpm dev &
@@ -92,14 +94,18 @@ frontend-build:
 
 # Run Playwright end-to-end tests (starts the full stack automatically)
 test-e2e:
+    # Stop the Docker backend container so the local dev backend can use port 8080
+    docker compose stop backend 2>/dev/null || true
     cd {{frontend_dir}} && pnpm test:e2e
 
 # Run Playwright tests in interactive UI mode
 test-e2e-ui:
+    docker compose stop backend 2>/dev/null || true
     cd {{frontend_dir}} && pnpm test:e2e:ui
 
 # Run Playwright tests in debug mode
 test-e2e-debug:
+    docker compose stop backend 2>/dev/null || true
     cd {{frontend_dir}} && pnpm test:e2e:debug
 
 # -----------------------------------------------------------------------------
